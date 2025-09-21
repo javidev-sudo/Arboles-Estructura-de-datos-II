@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AVL<T extends Comparable<T>> extends ArbolBinarioBusqueda<T>{
     
-    private static byte LIMTE_MAXIMO = 1;
+    private static final byte LIMTE_MAXIMO = 1;
 
     
     @Override
@@ -83,6 +83,34 @@ public class AVL<T extends Comparable<T>> extends ArbolBinarioBusqueda<T>{
     }
     
     
+    @Override
+    public void insertar(T datoAInsertar) throws ExcepcionDatoYaExiste{
+        if(datoAInsertar == null){
+           throw new IllegalArgumentException("No se puede insertar datos nulos!!");
+        }
+        
+        super.raiz = this.insertar(super.raiz, datoAInsertar);
+    }
+    
+    private NodoBinario<T> insertar(NodoBinario<T> nodoEnTurno, T datoAInsertar) throws ExcepcionDatoYaExiste{
+        if(NodoBinario.esNodoVacio(nodoEnTurno)){ // caso base
+            return new NodoBinario<>(datoAInsertar);
+        }
+        
+        T datoDelNodoEnTurno = nodoEnTurno.getDato();
+        if(datoAInsertar.compareTo(datoDelNodoEnTurno) < 0){ // se va por isquierda
+            NodoBinario<T> supuestoNuevohijoIzquierdo = this.insertar(nodoEnTurno.getHijoIzq(), datoAInsertar);  
+            nodoEnTurno.setHijoIzq(supuestoNuevohijoIzquierdo);
+            return balancear(nodoEnTurno);
+        }
+        if(datoAInsertar.compareTo(datoDelNodoEnTurno) > 0){
+            NodoBinario<T> supuestoNuevohijoDerecho = this.insertar(nodoEnTurno.getHijoDer(), datoAInsertar);
+            nodoEnTurno.setHijoDer(supuestoNuevohijoDerecho);
+            return balancear(nodoEnTurno);
+        }
+        throw new ExcepcionDatoYaExiste();
+    }
+       
     private NodoBinario<T> balancear(NodoBinario<T> nodoEnTurno){
         int alturaHijoDer = super.altura(nodoEnTurno.getHijoDer());
         int alturaHijoIzq = super.altura(nodoEnTurno.getHijoIzq());
@@ -91,8 +119,9 @@ public class AVL<T extends Comparable<T>> extends ArbolBinarioBusqueda<T>{
         if(diferencia > AVL.LIMTE_MAXIMO){ // lado mas largo es la IZQUIERDA, == rotar a la derecha
             NodoBinario<T> hijoIzquierdoNodoEnTurno = nodoEnTurno.getHijoIzq();
             
-            alturaHijoIzq = super.altura(hijoIzquierdoNodoEnTurno.getHijoIzq());
             alturaHijoDer = super.altura(hijoIzquierdoNodoEnTurno.getHijoDer());
+            alturaHijoIzq = super.altura(hijoIzquierdoNodoEnTurno.getHijoIzq());
+            
             
             if(alturaHijoDer > alturaHijoIzq){
                 return rotacionDobleADerecha(nodoEnTurno);
@@ -102,35 +131,47 @@ public class AVL<T extends Comparable<T>> extends ArbolBinarioBusqueda<T>{
             
         } else if (diferencia < -AVL.LIMTE_MAXIMO){// lado mas largo es la DERECHA, == rotar a la IZQUIERDA
             
-            NodoBinario<T> hijoDerechoNodoEnTurno = nodoEnTurno.getHijoIzq();
+            NodoBinario<T> hijoDerechoNodoEnTurno = nodoEnTurno.getHijoDer();
             
-            alturaHijoIzq = super.altura(hijoDerechoNodoEnTurno.getHijoIzq());
             alturaHijoDer = super.altura(hijoDerechoNodoEnTurno.getHijoDer());
+            alturaHijoIzq = super.altura(hijoDerechoNodoEnTurno.getHijoIzq());
             
             if(alturaHijoIzq > alturaHijoDer){
                 
                 return rotacionDobleAIzquierda(nodoEnTurno);
             }
             
-            return rotacionSimpleAIzquierda(nodoEnTurno); // falta adicionar
+            return rotacionSimpleAIzquierda(nodoEnTurno);
         }
         
         return nodoEnTurno;
     }
 
     private NodoBinario<T> rotacionSimpleADerecha(NodoBinario<T> nodoEnTurno) {
-        return new NodoBinario<>();
+        NodoBinario<T> nodoARetornar = nodoEnTurno.getHijoIzq();
+        nodoEnTurno.setHijoIzq(nodoARetornar.getHijoDer());
+        nodoARetornar.setHijoDer(nodoEnTurno);
+        return nodoARetornar;
     }
 
     private NodoBinario<T> rotacionSimpleAIzquierda(NodoBinario<T> nodoEnTurno) {
-       return new NodoBinario<>();
+       NodoBinario<T> nodoARetornar = nodoEnTurno.getHijoDer();
+       nodoEnTurno.setHijoDer(nodoARetornar.getHijoIzq());
+       nodoARetornar.setHijoIzq(nodoEnTurno);
+       return nodoARetornar;
     }
 
     private NodoBinario<T> rotacionDobleADerecha(NodoBinario<T> nodoEnTurno) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        NodoBinario<T> nodoARetornar = rotacionSimpleAIzquierda(nodoEnTurno.getHijoIzq());
+        nodoEnTurno.setHijoIzq(nodoARetornar);
+        return rotacionSimpleADerecha(nodoEnTurno);
     }
 
     private NodoBinario<T> rotacionDobleAIzquierda(NodoBinario<T> nodoEnTurno) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       NodoBinario<T> nodoARetornar = rotacionSimpleADerecha(nodoEnTurno.getHijoDer());
+        nodoEnTurno.setHijoDer(nodoARetornar);
+        return rotacionSimpleAIzquierda(nodoEnTurno); 
     }
+
+    
 }

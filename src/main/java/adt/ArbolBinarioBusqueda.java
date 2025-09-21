@@ -156,12 +156,18 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
            Stack<NodoBinario<T>> pilaDeNodos = new Stack<>(); // pila, de la cual tiene su propio constructor
            pilaDeNodos.push(this.raiz);
            while(!pilaDeNodos.isEmpty()){
+               
                NodoBinario<T> nodoEnTurno = pilaDeNodos.pop();
+               
                 listaDelRecorrido.add(nodoEnTurno.getDato());
+                
                if(!nodoEnTurno.esVacioHijoDer()){
+                   
                    pilaDeNodos.push(nodoEnTurno.getHijoDer());
+                   
                }
                if(!nodoEnTurno.esVacioHijoIzq()){
+                   
                    pilaDeNodos.push(nodoEnTurno.getHijoIzq());
                }
            }
@@ -470,8 +476,8 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
 
     @Override
     public boolean contiene(T dato) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        
+       
+        return this.buscar(dato) != null;
     }
 
     @Override
@@ -576,12 +582,30 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
         throw new ExcepcionDatoNoExiste("el dato que quiere saber la altura no existe en el arbol");
     }
     
-    ///FALTA HACER O DAR UNA SOLUCION
-    public int alturaDatoRec(T datoABuscar){
+    ///FALTA HACER O DAR UNA SOLUCI
+    /// @param datoABuscar
+    /// @return O
+    /// @throws excepciones.ExcepcionDatoNoExiste
+    public int alturaDatoRec(T datoABuscar) throws ExcepcionDatoNoExiste{
         return alturaDatoRec(this.raiz, datoABuscar);
     }
     
-    private int alturaDatoRec(NodoBinario<T> nodoEnTurno, T datoABuscar) {
+    private int alturaDatoRec(NodoBinario<T> nodoEnTurno, T datoABuscar) throws ExcepcionDatoNoExiste{
+        
+        if(NodoBinario.esNodoVacio(nodoEnTurno)){
+           throw new ExcepcionDatoNoExiste("EL DATO QUE QUIERE BUSCAR NO EXISTE EN EL ARBOL");
+        }
+        
+        T datoNodoEnTurno = nodoEnTurno.getDato();
+        if(datoABuscar.compareTo(datoNodoEnTurno) < 0){
+            int altura = alturaDatoRec(nodoEnTurno.getHijoIzq(),datoABuscar);
+            return altura+1;
+        }
+        if(datoABuscar.compareTo(datoNodoEnTurno) > 0){
+            int altura = alturaDatoRec(nodoEnTurno.getHijoDer(),datoABuscar);
+            return altura+1;
+        }
+       
         return 1;
     }
     
