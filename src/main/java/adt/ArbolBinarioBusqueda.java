@@ -27,8 +27,18 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
    
    
   
-   public ArbolBinarioBusqueda(){
+   public ArbolBinarioBusqueda()
+   {
        
+   }
+   public ArbolBinarioBusqueda(List<T> recorridoInOrden, List<T> recorridoNoInOrden, boolean recPostOrden) throws ExcepcionDatoYaExiste{
+       
+       if(recPostOrden){
+           this.raiz = recostruccionDeArbolConPostOrden(recorridoInOrden,recorridoNoInOrden);
+       }else{
+           this.raiz = recostruccionDeArbolConPreOrden(recorridoInOrden,recorridoNoInOrden);
+       }
+           
    }
    
    @Override
@@ -616,8 +626,156 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
        return cantidadHojaIzquierda+cantidadHojasDerecha;
     }
 
+    private NodoBinario<T> recostruccionDeArbolConPostOrden(List<T> recorridoInOrden, List<T> recorridoPostOrden) throws ExcepcionDatoYaExiste {
+         
+        if(recorridoInOrden.isEmpty() && recorridoPostOrden.isEmpty())
+        {
+           return null; 
+        }      
+        T elementoPostOr = recorridoPostOrden.getLast();
+        int posicionElemento = recorridoInOrden.indexOf(elementoPostOr);
+        NodoBinario<T> nodoARetornar = new NodoBinario<>();
+        nodoARetornar.setDato(elementoPostOr);
+        
+        
+        List<T> subRecorridoPorIzquierdaInOrden = new LinkedList<>();//recorridoInOrden.subList(0, posicionElemento);
+        List<T> subRecorridoPorIzquierdaPostOrden = new LinkedList<>();//recorridoPostOrden.subList(0, posicionElemento);
+        
+        for (int i = 0; i < posicionElemento; i++) {
+           subRecorridoPorIzquierdaInOrden.add(recorridoInOrden.get(i));
+           subRecorridoPorIzquierdaPostOrden.add(recorridoPostOrden.get(i));
+        }
+        
+        recorridoPostOrden.removeLast();
+        recorridoInOrden.remove(posicionElemento);
+        
+        List<T> subRecorridoPorDerechaInOrden = new LinkedList<>();//recorridoInOrden.subList(posicionElemento, recorridoInOrden.size());
+        List<T> subRecorridoPorDerechaPostOrden = new LinkedList<>();//recorridoPostOrden.subList(posicionElemento, recorridoInOrden.size());
+        
+        for (int i = posicionElemento; i < recorridoInOrden.size(); i++) {
+            subRecorridoPorDerechaInOrden.add(recorridoInOrden.get(i));
+            subRecorridoPorDerechaPostOrden.add(recorridoPostOrden.get(i));
+        }
+        
+        NodoBinario<T>  porIzquierda = recostruccionDeArbolConPostOrden(subRecorridoPorIzquierdaInOrden,subRecorridoPorIzquierdaPostOrden);//por izquierda
+        NodoBinario<T>  porDerecha = recostruccionDeArbolConPostOrden(subRecorridoPorDerechaInOrden,subRecorridoPorDerechaPostOrden); //por derecha
+        
+        nodoARetornar.setHijoIzq(porIzquierda);
+        nodoARetornar.setHijoDer(porDerecha);
+        
+        return nodoARetornar;
+    }
+
+    private NodoBinario<T> recostruccionDeArbolConPreOrden(List<T> recorridoInOrden, List<T> recorridoPreOrden) throws ExcepcionDatoYaExiste {
+        if(recorridoInOrden.isEmpty() && recorridoPreOrden.isEmpty())
+        {
+           return null; 
+        }      
+        T elementoPostOr = recorridoPreOrden.getFirst();
+        int posicionElemento = recorridoInOrden.indexOf(elementoPostOr);
+        NodoBinario<T> nodoARetornar = new NodoBinario<>();
+        nodoARetornar.setDato(elementoPostOr);
+        
+        
+        List<T> subRecorridoPorIzquierdaInOrden = new LinkedList<>();//recorridoInOrden.subList(0, posicionElemento);
+        List<T> subRecorridoPorIzquierdaPreOrden = new LinkedList<>();//recorridoPostOrden.subList(0, posicionElemento);
+        
+        for (int i = 0; i < posicionElemento; i++) {
+           subRecorridoPorIzquierdaInOrden.add(recorridoInOrden.get(i));
+           subRecorridoPorIzquierdaPreOrden.add(recorridoPreOrden.get(i+1));
+        }
+        
+        recorridoPreOrden.removeFirst();
+        recorridoInOrden.remove(posicionElemento);
+        
+        List<T> subRecorridoPorDerechaInOrden = new LinkedList<>();//recorridoInOrden.subList(posicionElemento, recorridoInOrden.size());
+        List<T> subRecorridoPorDerechaPreOrden = new LinkedList<>();//recorridoPostOrden.subList(posicionElemento, recorridoInOrden.size());
+        
+        for (int i = posicionElemento; i < recorridoInOrden.size(); i++) {
+            subRecorridoPorDerechaInOrden.add(recorridoInOrden.get(i));
+            subRecorridoPorDerechaPreOrden.add(recorridoPreOrden.get(i));
+        }
+        
+        NodoBinario<T>  porIzquierda = recostruccionDeArbolConPreOrden(subRecorridoPorIzquierdaInOrden,subRecorridoPorIzquierdaPreOrden);//por izquierda
+        NodoBinario<T>  porDerecha = recostruccionDeArbolConPreOrden(subRecorridoPorDerechaInOrden,subRecorridoPorDerechaPreOrden); //por derecha
+   
+        nodoARetornar.setHijoIzq(porIzquierda);
+        nodoARetornar.setHijoDer(porDerecha);
+        
+        return nodoARetornar;
+        
+        
+    }
+
     
     
+    
+    
+    public String toStringVertical() {
+        // Si el nodo es nulo, representamos "||"
+        if (this.raiz == null) {
+            return "(raíz) ||\n";
+        }
+        return toStringVertical("", "(raíz)", this.raiz);
+    }
+
+    /**
+     * Método auxiliar recursivo que construye la representación vertical del árbol.
+     * @param prefix      Prefijo para alinear visualmente las ramas verticales.
+     * @param branchLabel Etiqueta a mostrar antes del dato: (raíz), (I) o (D).
+     * @return Cadena con el formato vertical deseado.
+     */
+    private String toStringVertical(String prefix, String branchLabel, NodoBinario<T> nodoActual) {
+        if (nodoActual == null) {
+            return prefix + branchLabel + " ||\n";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix)
+                .append(branchLabel)
+                .append(" ")
+                .append(nodoActual.getDato() == null ? "||" : nodoActual.getDato())
+                .append("\n");
+
+        // Si el nodo tiene hijos, preparamos la conexión visual
+        String childPrefix = prefix + "│  ";
+
+        // (I) hijo izquierdo
+        if (nodoActual.getHijoIzq()!= null) {
+            sb.append(toStringVertical(childPrefix, "├─(I)", nodoActual.getHijoIzq()));
+        } else {
+            sb.append(childPrefix).append("├─(I) ||\n");
+        }
+
+        // (D) hijo derecho
+        if (nodoActual.getHijoDer() != null) {
+            sb.append(toStringVertical(childPrefix, "└─(D)", nodoActual.getHijoDer()));
+        } else {
+            sb.append(childPrefix).append("└─(D) ||\n");
+        }
+
+        return sb.toString();
+    }
+
+    public String toStringEstructura(NodoBinario<T> nodo, String prefijo, boolean esIzq) {
+    if (nodo == null) {
+        return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.append(prefijo);
+    sb.append(esIzq ? "├── " : "└── ");
+    sb.append(nodo.getDato());
+    sb.append("\n");
+    sb.append(toStringEstructura(nodo.getHijoIzq(), prefijo + (esIzq ? "│   " : "    "), true));
+    sb.append(toStringEstructura(nodo.getHijoDer(), prefijo + (esIzq ? "│   " : "    "), false));
+    return sb.toString();
+}
+
+// Llamada desde el ABB
+@Override
+public String toString() {
+    return toStringEstructura(this.raiz, "", false);
+}
     
    
     
