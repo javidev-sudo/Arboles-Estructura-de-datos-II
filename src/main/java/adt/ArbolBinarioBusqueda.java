@@ -31,6 +31,16 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
        
    }
    
+     public ArbolBinarioBusqueda(List<T> recorridoInOrden, List<T> recorridoNoInOrden, boolean recPostOrden) throws ExcepcionDatoYaExiste{
+       
+       if(recPostOrden){
+           this.raiz = recostruccionDeArbolConPostOrden(recorridoInOrden,recorridoNoInOrden);
+       }else{
+           this.raiz = recostruccionDeArbolConPreOrden(recorridoInOrden,recorridoNoInOrden);
+       }
+           
+   }
+   
    @Override
    public boolean esArbolVacio() {
         return NodoBinario.esNodoVacio(this.raiz);
@@ -615,12 +625,4 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
        
        return cantidadHojaIzquierda+cantidadHojasDerecha;
     }
-
-    
-    
-    
-   
-    
-    
-
 }
