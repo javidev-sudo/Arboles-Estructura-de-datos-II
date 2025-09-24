@@ -648,8 +648,6 @@ public class ArbolBinarioBusqueda<T extends Comparable<T>> implements IArbolBusq
        
        return cantidadHojaIzquierda+cantidadHojasDerecha;
     }
-<<<<<<< HEAD
-=======
 
     private NodoBinario<T> recostruccionDeArbolConPostOrden(List<T> recorridoInOrden, List<T> recorridoPostOrden) throws ExcepcionDatoYaExiste {
          
@@ -802,9 +800,4 @@ public String toString() {
     return toStringEstructura(this.raiz, "", false);
 }
     
-   
-    
-    
-
->>>>>>> 47eb153ab3c07d2a09687453d2601d1003fbb59a
 }
