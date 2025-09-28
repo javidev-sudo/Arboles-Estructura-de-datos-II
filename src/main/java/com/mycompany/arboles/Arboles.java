@@ -44,7 +44,7 @@ public class Arboles {
         
         int altu = A1.alturaDatoRec(3);
   
-        
+        System.out.println(A1.toString());
         System.out.println(altu);
         
     }

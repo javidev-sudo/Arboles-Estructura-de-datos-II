@@ -75,8 +75,14 @@ public class ArbolMViasBusqueda <T extends Comparable<T>> implements IArbolBusqu
          
     }
     
-    private int buscarPosicionDeDatoEnNodo(NodoMVias<T> nodoEnTurno, T datoAInsertar) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    protected int buscarPosicionDeDatoEnNodo(NodoMVias<T> nodoEnTurno, T datoAInsertar) {
+        for (int i = 0; i < nodoEnTurno.nroDeDatosNoVacios(); i++) {
+            T dataEnTurnno = nodoEnTurno.getDato(i);
+            if(datoAInsertar.compareTo(dataEnTurnno) == 0){
+                return i;
+            }
+        }      
+        return POSICION_INVALIDA;
     }
 
     @Override
@@ -131,7 +137,15 @@ public class ArbolMViasBusqueda <T extends Comparable<T>> implements IArbolBusqu
     }
 
     private int buscarPosicionPorDondeBajar(NodoMVias<T> nodoEnTurno, T datoAInsertar) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (int i = 0; i < nodoEnTurno.nroDeDatosNoVacios(); i++) {
+           if(datoAInsertar.compareTo(nodoEnTurno.getDato(i)) < 0){
+              return i;
+           }else if(datoAInsertar.compareTo(nodoEnTurno.getDato(i)) == 0){
+               return POSICION_INVALIDA;
+           }
+        }
+        
+        return orden;
     }
 
     private void insertarDatoOrdenadoEnNodo(NodoMVias<T> nodoEnTurno, T datoAInsertar) {
